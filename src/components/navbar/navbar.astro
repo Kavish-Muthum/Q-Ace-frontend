@@ -4,6 +4,7 @@ import Link from "@components/ui/link.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
 import logo from "assets/logo.png";
+import { Picture } from "astro:assets";
 
 const menuitems = [
   {
@@ -40,9 +41,12 @@ const menuitems = [
     <Astronav>
       <div class="flex w-full lg:w-auto items-center justify-between">
         <a href="/" class="text-lg">
-          <img src={logo} alt="Astroship Logo" class="inline-block w-6 h-6 mr-2">
-          <span class="font-bold text-slate-800">Astro</span>
-          <span class="text-slate-500">ship</span>
+          <Picture
+            src={logo}
+            alt="logo"
+            loading="eager"
+            format="png"
+          />
         </a>
         <div class="block lg:hidden">
           <MenuIcon class="w-4 h-4 text-gray-800" />

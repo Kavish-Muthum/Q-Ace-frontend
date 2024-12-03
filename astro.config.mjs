@@ -13,6 +13,5 @@ export default defineConfig({
         'process.env.PERPLEXITY_API_KEY': JSON.stringify(process.env.PERPLEXITY_API_KEY),
         'process.env.OPENAI_API_KEY': JSON.stringify(process.env.OPENAI_API_KEY)
     }
-  } ,
-  output: 'server'
+  } 
 });

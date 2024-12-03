@@ -205,8 +205,11 @@ const { title = 'Recording' } = Astro.props;
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });
                 saveRecordingToIndexedDB(blob);
                 recordedChunks = [];
+                
+                // Navigate to the results page after saving the recording
+                window.location.href = '/results';
             };
-        }
+        }   
 
         function saveRecordingToIndexedDB(blob) {
             const transaction = db.transaction([storeName], 'readwrite');

@@ -2,7 +2,7 @@ import requests
 from openai import OpenAI
 
 # Placeholder for your Perplexity API key
-PERPLEXITY_API_KEY = "key here"
+PERPLEXITY_API_KEY = "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"
 
 # Initialize OpenAI client
 client = OpenAI()
@@ -49,19 +49,12 @@ analysis_headers = {
 analysis_data = {
     "model": "llama-3.1-sonar-small-128k-online",
     "messages": [
-        {"role": "system", "content": f"""
-        You are a text analyzer who specializes in scrutinizing job descriptions and seeing if the answers somebody gives to potential interview questions align with the job's values. 
+        {"role": "system", "content": f"""You are a text analyzer who specializes in scrutinizing job descriptions and seeing if the answers somebody gives to potential interview questions align with the job's values. 
         You will be given a job description, interview question, and someone giving a sample response. 
         Your job is to evaluate how well the response answers the question and aligns with the job description. 
-        If they mention a company name, look up interview questions that are typically asked and their responses for that company and give tips to how well the user's response aligns with those actions. 
-        Always give constructive criticism to the user.
-        Additionally, give a user score from 1 to 100 and tell the user how well they did and explain why they got that score.
-        """},
-        {"role": "user", "content": f"""
-        Job Description: {job_desc}
-        Interview Question: What skills do you have that will be relevant to this position?
-        User Response: {transcription.text}
-        """}
+        If they mention a company name, look up interview questions that are typically asked and their responses for that company and give tips to how well the user's response aligns with those actions. Always give constructive criticism to the user.
+        Additionally, give a user score from 1 to 100 and tell the user how well they did and explain why they got that score."""},
+        {"role": "user", "content": f"""Job Description: {job_desc}, Interview Question: What skills do you have that will be relevant to this position? User Response: {transcription.text}"""}
     ]
 }
 
@@ -282,7 +275,6 @@ def calculate_audio_score(pitch_variation, average_volume, speaking_rate, pause_
 # Calculate the score using the extracted metrics
 audio_score = calculate_audio_score(pitch_variation, average_volume, speaking_rate, pause_count, pause_duration, total_duration, speech_ratio)
 
-print(f"Overall Audio Score: {audio_score}/100")
 
 # Function to get common interview questions for a company
 def get_company_interview_questions(company_name):
@@ -309,11 +301,3 @@ def get_company_interview_questions(company_name):
             return [q.strip() for q in questions if q.strip()]
     
     return []
-
-# Get common interview questions
-common_questions = get_company_interview_questions(company_name)
-
-# Add this to your existing analysis_data
-
-print(f"\nCommon Interview Questions for {company_name}:")
-print(common_questions)

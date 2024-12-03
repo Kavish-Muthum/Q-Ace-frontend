@@ -1,6 +1,7 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
+import { get_company_interview_questions } from '../convergent.js';
 
 const { title = 'Recording' } = Astro.props;
 ---
@@ -63,45 +64,33 @@ const { title = 'Recording' } = Astro.props;
     <script>
       const form = document.getElementById('interviewForm');
       const beginRecordingBtn = document.getElementById('beginRecording');
-  
+    
       form.addEventListener('submit', async (e) => {
-          e.preventDefault();
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = {
+          company: formData.get('company'),
+          field: formData.get('field'),
+          role: formData.get('role'),
+          tone: formData.get('tone')
+        };
+    
+        try {
+          const questions = await get_company_interview_questions(data.company);
           
-          const formData = new FormData(form);
-          const data = {
-              company: formData.get('company'),
-              field: formData.get('field'),
-              role: formData.get('role'),
-              tone: formData.get('tone')
-          };
-  
-          try {
-              const response = await fetch('/api/questions', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ company: data.company }),
-              });
-  
-              if (!response.ok) {
-                  throw new Error('Failed to fetch questions');
-              }
-  
-              const responseData = await response.json();
-              
-              // Store both questions and form data
-              sessionStorage.setItem('interviewQuestions', JSON.stringify(responseData.questions));
-              sessionStorage.setItem('interviewData', JSON.stringify(data));
-              
-              // Navigate to video page
-              window.location.href = '/video';
-          } catch (error) {
-              console.error('Error:', error);
-              alert('Failed to get interview questions. Please try again.');
-          }
+          // Store both questions and form data
+          sessionStorage.setItem('interviewQuestions', JSON.stringify(questions));
+          sessionStorage.setItem('interviewData', JSON.stringify(data));
+          
+          // Navigate to video page
+          window.location.href = '/video';
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to get interview questions. Please try again.');
+        }
       });
-  </script>
+    </script>
 
 </body>
 </html>

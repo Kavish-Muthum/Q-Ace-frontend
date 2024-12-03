@@ -5,20 +5,21 @@ import Navbar from "@components/navbar/navbar.astro";
 import "@fontsource-variable/inter/index.css";
 import '@fontsource-variable/bricolage-grotesque';
 
-
-
 export interface Props {
   title: string;
+  hideNavbar?: boolean; // New optional prop
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
-
 const resolvedImageWithDomain = new URL(
   "/opengraph.jpg",
   Astro.site
 ).toString();
 
-const { title } = Astro.props;
+const { 
+  title, 
+  hideNavbar = false // Default to showing navbar
+} = Astro.props;
 
 const makeTitle = title
   ? title + " | " + "Q&Ace"
@@ -33,7 +34,6 @@ const makeTitle = title
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- <link rel="preload" as="image" href={src} alt="Hero" /> -->
     <SEO
       title={makeTitle}
       description="Ace - Target Your Future"
@@ -42,7 +42,7 @@ const makeTitle = title
         basic: {
           url: canonicalURL,
           type: "website",
-          title: `Astroship - Starter Template for Astro`,
+          title: `Ace - Target Your Future`,
           image: resolvedImageWithDomain,
         },
         image: {
@@ -52,7 +52,7 @@ const makeTitle = title
     />
   </head>
   <body>
-    <Navbar />
+    {!hideNavbar && <Navbar />}
     <slot />
     <Footer />
     <style is:global>

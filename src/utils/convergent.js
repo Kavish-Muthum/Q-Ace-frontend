@@ -1,6 +1,7 @@
-import OpenAI from 'openai';
-import axios from 'axios';
-import librosa from 'librosa-js';
+const OpenAI = require('openai');
+const axios = require('axios');
+const fs = require('fs');
+const librosa = require('librosa-js');
 
 module.exports = { get_company_interview_questions };
 

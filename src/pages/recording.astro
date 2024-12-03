@@ -60,45 +60,39 @@ const { title = 'Recording' } = Astro.props;
             </form>
         </div>
     </main>
-
     <script>
-        const form = document.getElementById('interviewForm');
-        const beginRecordingBtn = document.getElementById('beginRecording');
+      import { get_company_interview_questions } from '../../utils/convergent.py';
+  
+      const form = document.getElementById('interviewForm');
+      const beginRecordingBtn = document.getElementById('beginRecording');
+  
+      form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const formData = new FormData(form);
+          const data = {
+              company: formData.get('company'),
+              field: formData.get('field'),
+              role: formData.get('role'),
+              tone: formData.get('tone')
+          };
+  
+          try {
+              // Call the Python function directly
+              const questions = await get_company_interview_questions(data.company);
+              
+              // Store the questions and form data in sessionStorage
+              sessionStorage.setItem('interviewQuestions', JSON.stringify(questions));
+              sessionStorage.setItem('interviewData', JSON.stringify(data));
+              
+              // Navigate to the video recording page
+              window.location.href = '/video';
+          } catch (error) {
+              console.error('Error:', error);
+              alert('Failed to get interview questions. Please try again.');
+          }
+      });
+  </script>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            const data = {
-                company: formData.get('company'),
-                field: formData.get('field'),
-                role: formData.get('role'),
-                tone: formData.get('tone')
-            };
-
-            try {
-                const response = await fetch('src/pages/api/questions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch questions');
-                }
-
-                const responseData = await response.json();
-                sessionStorage.setItem('interviewQuestions', JSON.stringify(responseData.questions));
-                sessionStorage.setItem('interviewData', JSON.stringify(data));
-                
-                window.location.href = '/video';
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to get interview questions. Please try again.');
-            }
-        });
-    </script>
 </body>
 </html>

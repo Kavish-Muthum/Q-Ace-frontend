@@ -91,7 +91,6 @@ const { title = 'Recording' } = Astro.props;
         let elapsedTime = 0;
         let timerInterval;
 
-        // Get DOM elements
         const startRecordButton = document.getElementById('startRecord');
         const stopRecordButton = document.getElementById('stopRecord');
         const previewVideo = document.getElementById('preview');
@@ -101,7 +100,6 @@ const { title = 'Recording' } = Astro.props;
         const timerDisplay = document.getElementById('timerDisplay');
         const questionsList = document.getElementById('questionsList');
 
-        // Add event listeners
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
         playLastRecordingButton.addEventListener('click', playLastRecording);
@@ -140,10 +138,9 @@ const { title = 'Recording' } = Astro.props;
                 bubble.innerHTML = `<p class="text-lg">${question}</p>`;
                 questionsList.appendChild(bubble);
             });
-        });
 
-        // Initialize video preview
-        initializeVideoPreview();
+            initializeVideoPreview();
+        });
 
         async function initializeVideoPreview() {
             try {
@@ -230,9 +227,9 @@ const { title = 'Recording' } = Astro.props;
         function saveRecordingToIndexedDB(blob) {
             const transaction = db.transaction([storeName], 'readwrite');
             const objectStore = transaction.objectStore(storeName);
-            const request = objectStore.add({ 
-                video: blob, 
-                timestamp: new Date().toISOString() 
+            const request = objectStore.add({
+                video: blob,
+                timestamp: new Date().toISOString()
             });
 
             request.onsuccess = () => {

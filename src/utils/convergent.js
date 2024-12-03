@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import axios from 'axios'
-import fs from 'fs'
 import librosa from 'librosa-js'
 
 module.exports = { get_company_interview_questions };

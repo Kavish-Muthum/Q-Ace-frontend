@@ -1,7 +1,8 @@
-const OpenAI = require('openai');
-const axios = require('axios');
-const fs = require('fs');
-const librosa = require('librosa-js');
+import OpenAI from 'openai';
+import axios from 'axios'
+import fs from 'fs'
+import librosa from 'librosa-js'
+
 module.exports = { get_company_interview_questions };
 
 // Placeholder for your Perplexity API key

@@ -8,12 +8,5 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   site: "https://astroship.web3templates.com",
-  integrations: [tailwind(), mdx(), sitemap(), icon()],
-  vite: {
-    build: {
-        commonjsOptions: { 
-            transformMixedEsModules: true 
-        }
-    }
-  }
+  integrations: [tailwind(), mdx(), sitemap(), icon()]
 });

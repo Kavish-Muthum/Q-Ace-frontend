@@ -1,26 +1,8 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
-import noRecordings from '../assets/no-recordings.png';
-import { Picture } from "astro:assets";
-import Mux from "@mux/mux-node";
 
-const { title = 'Video Recording' } = Astro.props;
-
-// Initialize Mux client
-const mux = new Mux({
-  tokenId: "4171b5e3-2559-4896-9346-77a463624f37",
-  tokenSecret: "bEXuYkF4WAJLhiN60ena1GqusAZGXBYVrLJwjmMWZftjdCsws\\8DbQGH3wst4/6AePsipQpQuTd"
-});
-
-// Create a direct upload URL
-const upload = await mux.video.uploads.create({
-  new_asset_settings: {
-    playback_policy: ['public'],
-    encoding_tier: 'baseline',
-  },
-  cors_origin: '*',
-});
+const { title = 'Recording' } = Astro.props;
 ---
 
 <html lang="en">
@@ -37,75 +19,68 @@ const upload = await mux.video.uploads.create({
         <Header title={title} />
         
         <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Record Video</h2>
-            <div id="video-recorder" class="mb-8">
-                <video id="preview" class="w-full max-w-lg mb-4" autoplay muted></video>
-                <button id="startRecord" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Start Recording</button>
-                <button id="stopRecord" class="bg-red-500 text-white px-4 py-2 rounded" disabled>Stop Recording</button>
-            </div>
-
-            <h2 class="text-2xl font-bold mb-4">Playback</h2>
-            <div id="video-playback">
-                <mux-player id="mux-player" class="w-full max-w-lg" playback-id=""></mux-player>
+            <slot />
+            
+            <div class="space-y-4">
+                <video id="preview" autoplay muted class="w-full max-w-lg border border-gray-300 rounded-lg"></video>
+                <div class="space-x-2">
+                    <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
+                    <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
+                </div>
+                <video id="recorded" controls class="w-full max-w-lg border border-gray-300 rounded-lg"></video>
+                <a id="downloadLink" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-block" style="display: none;">Download Video</a>
             </div>
         </div>
     </main>
 
     <script>
-        import '@mux/mux-player';
-        import '@mux/mux-uploader';
-
         let mediaRecorder;
         let recordedChunks = [];
 
         const startRecordButton = document.getElementById('startRecord');
         const stopRecordButton = document.getElementById('stopRecord');
         const previewVideo = document.getElementById('preview');
-        const muxPlayer = document.getElementById('mux-player');
+        const recordedVideo = document.getElementById('recorded');
+        const downloadLink = document.getElementById('downloadLink');
 
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
 
         async function startRecording() {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            previewVideo.srcObject = stream;
-            mediaRecorder = new MediaRecorder(stream);
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.start();
-            startRecordButton.disabled = true;
-            stopRecordButton.disabled = false;
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                previewVideo.srcObject = stream;
+                
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.start();
+                startRecordButton.disabled = true;
+                stopRecordButton.disabled = false;
+            } catch (error) {
+                console.error("Error accessing media devices:", error);
+                alert("Failed to access camera and microphone. Please ensure you've granted the necessary permissions.");
+            }
         }
 
-        async function stopRecording() {
+        function stopRecording() {
             mediaRecorder.stop();
             startRecordButton.disabled = false;
             stopRecordButton.disabled = true;
-
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const formData = new FormData();
-            formData.append('file', blob, 'recorded-video.webm');
-
-            try {
-                const response = await fetch('{upload.url}', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    muxPlayer.setAttribute('playback-id', data.playback_id);
-                } else {
-                    console.error('Upload failed');
-                }
-            } catch (error) {
-                console.error('Error uploading video:', error);
-            }
+            
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                recordedVideo.src = URL.createObjectURL(blob);
+                downloadLink.href = recordedVideo.src;
+                downloadLink.download = 'recorded_video.webm';
+                downloadLink.style.display = 'inline-block';
+                recordedChunks = [];
+            };
         }
     </script>
 </body>

@@ -1,6 +1,8 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
+import noRecordings from '../assets/no-recordings.png';
+import { Picture } from "astro:assets";
 
 const { title = 'Recording' } = Astro.props;
 ---
@@ -11,6 +13,19 @@ const { title = 'Recording' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title} | SaaS Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #preview {
+            transform: scaleX(-1);
+        }
+        .recording-indicator {
+            color: red;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
     <Sidebar />
@@ -21,8 +36,12 @@ const { title = 'Recording' } = Astro.props;
         <div class="mt-8">
             <slot />
             
-            <div class="space-y-4">
-                <video id="preview" autoplay muted class="w-full max-w-lg border border-gray-300 rounded-lg"></video>
+            <div class="space-y-4 flex flex-col items-center">
+                <div class="relative w-full max-w-lg">
+                    <video id="preview" autoplay muted class="w-full border border-gray-300 rounded-lg"></video>
+                    <div id="recordingIndicator" class="recording-indicator">Recording</div>
+                </div>
+                <div id="timerDisplay" class="text-lg font-bold">00:00</div>
                 <div class="space-x-2">
                     <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
                     <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
@@ -36,15 +55,52 @@ const { title = 'Recording' } = Astro.props;
     <script>
         let mediaRecorder;
         let recordedChunks = [];
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
 
         const startRecordButton = document.getElementById('startRecord');
         const stopRecordButton = document.getElementById('stopRecord');
         const previewVideo = document.getElementById('preview');
         const recordedVideo = document.getElementById('recorded');
         const downloadLink = document.getElementById('downloadLink');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const timerDisplay = document.getElementById('timerDisplay');
 
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
+
+        function showRecordingIndicator() {
+            recordingIndicator.style.display = 'block';
+        }
+
+        function hideRecordingIndicator() {
+            recordingIndicator.style.display = 'none';
+        }
+
+        function startTimer() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                timerDisplay.innerHTML = timeToString(elapsedTime);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function timeToString(time) {
+            const diffInMin = time / 60000;
+            const mm = Math.floor(diffInMin);
+            const diffInSec = (diffInMin - mm) * 60;
+            const ss = Math.floor(diffInSec);
+
+            const formattedMM = mm.toString().padStart(2, '0');
+            const formattedSS = ss.toString().padStart(2, '0');
+
+            return `${formattedMM}:${formattedSS}`;
+        }
 
         async function startRecording() {
             try {
@@ -62,6 +118,9 @@ const { title = 'Recording' } = Astro.props;
                 mediaRecorder.start();
                 startRecordButton.disabled = true;
                 stopRecordButton.disabled = false;
+                
+                showRecordingIndicator();
+                startTimer();
             } catch (error) {
                 console.error("Error accessing media devices:", error);
                 alert("Failed to access camera and microphone. Please ensure you've granted the necessary permissions.");
@@ -72,6 +131,9 @@ const { title = 'Recording' } = Astro.props;
             mediaRecorder.stop();
             startRecordButton.disabled = false;
             stopRecordButton.disabled = true;
+            
+            hideRecordingIndicator();
+            stopTimer();
             
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });

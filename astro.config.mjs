@@ -4,7 +4,6 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
 import node from '@astrojs/node';
-import viteRequire from 'vite-plugin-require';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,6 +15,5 @@ export default defineConfig({
             transformMixedEsModules: true 
         }
     }
-  },
-  plugins: [viteRequire()]
+  }
 });

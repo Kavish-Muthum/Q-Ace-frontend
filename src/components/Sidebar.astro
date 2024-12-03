@@ -4,6 +4,7 @@ import AnalyticsIcon from '../icons/AnalyticsIcon.astro';
 import BillingIcon from '../icons/BillingIcon.astro';
 import SettingsIcon from '../icons/SettingsIcon.astro';
 import logo from '../assets/logo.png';
+import { Picture } from "astro:assets";
 
 const menuItems = [
     { 
@@ -35,7 +36,13 @@ const menuItems = [
 
 <aside class="fixed left-0 top-0 h-full w-64 bg-white border-r shadow-md">
     <div class="p-6">
-        <img src={logo} alt="SaaS Platform Logo" class="mb-8 max-w-full h-auto">
+        <Picture
+            src={logo}
+            alt="logo"
+            loading="eager"
+            format="png"
+            class="h-8 w-auto" 
+          />
         
         <nav>
             <ul class="space-y-2">

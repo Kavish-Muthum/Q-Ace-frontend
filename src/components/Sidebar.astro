@@ -3,6 +3,7 @@ import DashboardIcon from '../icons/DashboardIcon.astro';
 import AnalyticsIcon from '../icons/AnalyticsIcon.astro';
 import BillingIcon from '../icons/BillingIcon.astro';
 import SettingsIcon from '../icons/SettingsIcon.astro';
+import logo from 'src/assets/logo.png';
 
 const menuItems = [
     { 
@@ -34,7 +35,7 @@ const menuItems = [
 
 <aside class="fixed left-0 top-0 h-full w-64 bg-white border-r shadow-md">
     <div class="p-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-8">SaaS Platform</h1>
+        <img src={logo} alt="SaaS Platform Logo" class="mb-8 max-w-full h-auto">
         
         <nav>
             <ul class="space-y-2">

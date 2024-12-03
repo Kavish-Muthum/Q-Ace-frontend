@@ -2,6 +2,7 @@ const OpenAI = require('openai');
 const axios = require('axios');
 const fs = require('fs');
 const librosa = require('librosa-js');
+module.exports = { get_company_interview_questions };
 
 // Placeholder for your Perplexity API key
 const PERPLEXITY_API_KEY = "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";
@@ -172,7 +173,7 @@ function calculate_audio_score(pitch_variation, average_volume, speaking_rate, p
   // ... (same as Python version)
 }
 
-async function get_company_interview_questions(company_name) {
+export async function get_company_interview_questions(company_name) {
     const analysis_url = "https://api.perplexity.ai/chat/completions";
     const analysis_headers = {
       "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
@@ -198,7 +199,6 @@ async function get_company_interview_questions(company_name) {
     return [];
   }
   
-  module.exports = { get_company_interview_questions };
   
   
 

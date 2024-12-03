@@ -23,6 +23,23 @@ const { title = 'Recording' } = Astro.props;
             right: 10px;
             display: none;
         }
+        .speech-bubble {
+            position: relative;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            border-width: 10px 20px 10px 0;
+            border-style: solid;
+            border-color: transparent #f8f8f8 transparent transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
@@ -34,18 +51,25 @@ const { title = 'Recording' } = Astro.props;
         <div class="mt-8">
             <slot />
             
-            <div class="space-y-4 flex flex-col items-center">
-                <div class="relative w-full max-w-3xl">
-                    <video id="preview" autoplay muted class="w-full border border-gray-300 rounded-lg"></video>
-                    <div id="recordingIndicator" class="recording-indicator">Recording</div>
+            <div class="flex justify-between items-start">
+                <div class="space-y-4 flex flex-col items-center w-1/2">
+                    <div class="relative w-full">
+                        <video id="preview" autoplay muted class="w-full border border-gray-300 rounded-lg"></video>
+                        <div id="recordingIndicator" class="recording-indicator">Recording</div>
+                    </div>
+                    <div id="timerDisplay" class="text-lg font-bold">00:00</div>
+                    <div class="space-x-2">
+                        <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
+                        <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
+                    </div>
+                    <video id="recorded" controls class="w-full border border-gray-300 rounded-lg"></video>
+                    <a id="downloadLink" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-block" style="display: none;">Download Video</a>
                 </div>
-                <div id="timerDisplay" class="text-lg font-bold">00:00</div>
-                <div class="space-x-2">
-                    <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
-                    <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
+                <div class="w-1/2 pl-8">
+                    <div class="speech-bubble">
+                        <p class="text-lg">What is your greatest strength?</p>
+                    </div>
                 </div>
-                <video id="recorded" controls class="w-full max-w-3xl border border-gray-300 rounded-lg"></video>
-                <a id="downloadLink" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-block" style="display: none;">Download Video</a>
             </div>
         </div>
     </main>

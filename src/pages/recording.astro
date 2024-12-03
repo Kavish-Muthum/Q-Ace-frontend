@@ -1,10 +1,10 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
-import { get_company_interview_questions } from 'utils/convergent.js';
 
 const { title = 'Recording' } = Astro.props;
 ---
+
 
 <html lang="en">
 <head>
@@ -62,6 +62,8 @@ const { title = 'Recording' } = Astro.props;
         </div>
     </main>
     <script>
+      import { get_company_interview_questions } from '../utils/convergent.js';
+    
       const form = document.getElementById('interviewForm');
       const beginRecordingBtn = document.getElementById('beginRecording');
     

@@ -61,8 +61,6 @@ const { title = 'Recording' } = Astro.props;
         </div>
     </main>
     <script>
-      import { get_company_interview_questions } from "../convergent.py";
-  
       const form = document.getElementById('interviewForm');
       const beginRecordingBtn = document.getElementById('beginRecording');
   
@@ -78,14 +76,25 @@ const { title = 'Recording' } = Astro.props;
           };
   
           try {
-              // Call the Python function directly
-              const questions = await get_company_interview_questions(data.company);
+              const response = await fetch('/api/questions', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ company: data.company }),
+              });
+  
+              if (!response.ok) {
+                  throw new Error('Failed to fetch questions');
+              }
+  
+              const responseData = await response.json();
               
-              // Store the questions and form data in sessionStorage
-              sessionStorage.setItem('interviewQuestions', JSON.stringify(questions));
+              // Store both questions and form data
+              sessionStorage.setItem('interviewQuestions', JSON.stringify(responseData.questions));
               sessionStorage.setItem('interviewData', JSON.stringify(data));
               
-              // Navigate to the video recording page
+              // Navigate to video page
               window.location.href = '/video';
           } catch (error) {
               console.error('Error:', error);

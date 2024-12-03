@@ -1,0 +1,30 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import Header from '../components/Header.astro';
+import noRecordings from '../assets/no-recordings.png';
+import { Picture } from "astro:assets";
+
+const { title = 'Recording' } = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} | SaaS Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <Sidebar />
+    
+    <main class="flex-grow bg-white ml-64 p-8">
+        <Header title={title} />
+        
+        <div class="mt-8">
+            <slot />
+        </div>
+
+        
+    </main>
+</body>
+</html>

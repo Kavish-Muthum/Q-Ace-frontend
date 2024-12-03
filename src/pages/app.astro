@@ -1,7 +1,8 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
-
+import noRecordings from '../assets/no-recordings.png';
+import { Picture } from "astro:assets";
 
 const { title = 'Dashboard' } = Astro.props;
 ---
@@ -22,6 +23,13 @@ const { title = 'Dashboard' } = Astro.props;
         <div class="mt-8">
             <slot />
         </div>
+
+        <Picture
+            src={noRecordings}
+            alt="logo"
+            loading="eager"
+            format="png"
+        />
     </main>
 </body>
 </html>

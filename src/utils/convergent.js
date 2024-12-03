@@ -3,7 +3,7 @@
 // const fs = require('fs');
 // const librosa = require('librosa-js');
 
-// module.exports = { get_company_interview_questions };
+module.exports = { get_company_interview_questions };
 
 // // Placeholder for your Perplexity API key
 // const PERPLEXITY_API_KEY = "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";

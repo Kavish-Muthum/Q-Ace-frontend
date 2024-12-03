@@ -1,8 +1,6 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
-import noRecordings from '../assets/no-recordings.png';
-import { Picture } from "astro:assets";
 
 const { title = 'Recording' } = Astro.props;
 ---
@@ -37,7 +35,7 @@ const { title = 'Recording' } = Astro.props;
             <slot />
             
             <div class="space-y-4 flex flex-col items-center">
-                <div class="relative w-full max-w-lg">
+                <div class="relative w-full max-w-3xl">
                     <video id="preview" autoplay muted class="w-full border border-gray-300 rounded-lg"></video>
                     <div id="recordingIndicator" class="recording-indicator">Recording</div>
                 </div>
@@ -46,7 +44,7 @@ const { title = 'Recording' } = Astro.props;
                     <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
                     <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
                 </div>
-                <video id="recorded" controls class="w-full max-w-lg border border-gray-300 rounded-lg"></video>
+                <video id="recorded" controls class="w-full max-w-3xl border border-gray-300 rounded-lg"></video>
                 <a id="downloadLink" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-block" style="display: none;">Download Video</a>
             </div>
         </div>
@@ -69,6 +67,19 @@ const { title = 'Recording' } = Astro.props;
 
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
+
+        // Start video preview as soon as the page loads
+        initializeVideoPreview();
+
+        async function initializeVideoPreview() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                previewVideo.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing camera:", error);
+                alert("Failed to access camera. Please ensure you've granted the necessary permissions.");
+            }
+        }
 
         function showRecordingIndicator() {
             recordingIndicator.style.display = 'block';

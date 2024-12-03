@@ -70,7 +70,7 @@ const { title = 'Recording' } = Astro.props;
                         <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
                     </div>
                     <video id="recorded" controls class="border border-gray-300 rounded-lg"></video>
-                    <a id="downloadLink" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-block" style="display: none;">Download Video</a>
+                    <button id="playLastRecording" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play Last Recording</button>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="speech-bubble">
@@ -92,12 +92,36 @@ const { title = 'Recording' } = Astro.props;
         const stopRecordButton = document.getElementById('stopRecord');
         const previewVideo = document.getElementById('preview');
         const recordedVideo = document.getElementById('recorded');
-        const downloadLink = document.getElementById('downloadLink');
+        const playLastRecordingButton = document.getElementById('playLastRecording');
         const recordingIndicator = document.getElementById('recordingIndicator');
         const timerDisplay = document.getElementById('timerDisplay');
 
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
+        playLastRecordingButton.addEventListener('click', playLastRecording);
+
+        // IndexedDB setup
+        let db;
+        const dbName = 'VideoRecordingsDB';
+        const dbVersion = 1;
+        const storeName = 'recordings';
+
+        const request = indexedDB.open(dbName, dbVersion);
+
+        request.onerror = (event) => {
+            console.error("IndexedDB error:", event.target.error);
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            console.log("IndexedDB opened successfully");
+        };
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+            console.log("Object store created");
+        };
 
         // Start video preview as soon as the page loads
         initializeVideoPreview();
@@ -179,11 +203,43 @@ const { title = 'Recording' } = Astro.props;
             
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                recordedVideo.src = URL.createObjectURL(blob);
-                downloadLink.href = recordedVideo.src;
-                downloadLink.download = 'recorded_video.webm';
-                downloadLink.style.display = 'inline-block';
+                saveRecordingToIndexedDB(blob);
                 recordedChunks = [];
+            };
+        }
+
+        function saveRecordingToIndexedDB(blob) {
+            const transaction = db.transaction([storeName], 'readwrite');
+            const objectStore = transaction.objectStore(storeName);
+            const request = objectStore.add({ video: blob, timestamp: new Date().toISOString() });
+
+            request.onsuccess = () => {
+                console.log("Recording saved to IndexedDB");
+            };
+
+            request.onerror = (event) => {
+                console.error("Error saving recording to IndexedDB:", event.target.error);
+            };
+        }
+
+        async function playLastRecording() {
+            const transaction = db.transaction([storeName], 'readonly');
+            const objectStore = transaction.objectStore(storeName);
+            const request = objectStore.openCursor(null, 'prev');
+
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const blob = cursor.value.video;
+                    recordedVideo.src = URL.createObjectURL(blob);
+                    recordedVideo.play();
+                } else {
+                    console.log("No recordings found");
+                }
+            };
+
+            request.onerror = (event) => {
+                console.error("Error retrieving recording from IndexedDB:", event.target.error);
             };
         }
     </script>

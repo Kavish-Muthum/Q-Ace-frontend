@@ -1,0 +1,103 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import Header from '../components/Header.astro';
+
+const { title = 'Text Analysis' } = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} | SaaS Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .feedback-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <Sidebar />
+    
+    <main class="flex-grow bg-white ml-64 p-8">
+        <Header title={title} />
+        
+        <div class="mt-8">
+            <h1 class="text-2xl font-bold text-blue-900 mb-6">Text Analysis Feedback</h1>
+
+            <!-- Video Playback Section -->
+            <div class="mb-8">
+                <video id="recorded" controls class="w-full max-w-4xl mx-auto border border-gray-300 rounded-lg"></video>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Strengths</h2>
+                    <p id="strengths" class="text-lg text-gray-700"></p>
+                </div>
+
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Weaknesses</h2>
+                    <p id="weaknesses" class="text-lg text-gray-700"></p>
+                </div>
+
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Tips to improve</h2>
+                    <p id="tips" class="text-lg text-gray-700"></p>
+                </div>
+
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Text Analysis Score</h2>
+                    <p id="textScore" class="text-4xl font-bold text-blue-600"></p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button class="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    EXIT
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Retrieve last recording from IndexedDB
+        const dbName = 'VideoRecordingsDB';
+        const storeName = 'recordings';
+        
+        const request = indexedDB.open(dbName, 1);
+        
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction([storeName], 'readonly');
+            const objectStore = transaction.objectStore(storeName);
+            const getLastRecording = objectStore.openCursor(null, 'prev');
+            
+            getLastRecording.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const recordedVideo = document.getElementById('recorded');
+                    recordedVideo.src = URL.createObjectURL(cursor.value.video);
+                }
+            };
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const textMetrics = JSON.parse(sessionStorage.getItem('textMetrics') || '{}');
+            
+            document.getElementById('strengths').textContent = textMetrics.strengths || 'No strengths data available';
+            document.getElementById('weaknesses').textContent = textMetrics.weaknesses || 'No weaknesses data available';
+            document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
+            document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
+        });
+
+        document.querySelector('button').addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+    </script>
+</body>
+</html>

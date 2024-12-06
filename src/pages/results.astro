@@ -2,7 +2,7 @@
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
 
-const { title = 'Video Analysis' } = Astro.props;
+const { title = 'Audio Analysis' } = Astro.props;
 ---
 
 <html lang="en">
@@ -18,6 +18,12 @@ const { title = 'Video Analysis' } = Astro.props;
             padding: 1rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+        .feedback-section {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
@@ -27,7 +33,7 @@ const { title = 'Video Analysis' } = Astro.props;
         <Header title={title} />
         
         <div class="mt-8">
-            <h1 class="text-2xl font-bold mb-6">Video Analysis Feedback</h1>
+            <h1 class="text-2xl font-bold mb-6">Overall Feedback</h1>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Video Playback Section -->
@@ -35,42 +41,53 @@ const { title = 'Video Analysis' } = Astro.props;
                     <video id="recorded" controls class="w-full border border-gray-300 rounded-lg"></video>
                 </div>
 
-                <!-- Analysis Section -->
+                <!-- Metrics Section -->
                 <div class="space-y-4">
                     <div class="metric-card">
-                        <h3 class="font-semibold text-gray-700">Content Score</h3>
-                        <p id="contentScore" class="text-2xl font-bold text-blue-600"></p>
+                        <h3 class="font-semibold text-gray-700">Pitch Variation</h3>
+                        <p id="pitchVariation" class="text-lg"></p>
+                    </div>
+                    <div class="metric-card">
+                        <h3 class="font-semibold text-gray-700">Average Volume</h3>
+                        <p id="avgVolume" class="text-lg"></p>
                     </div>
                 </div>
             </div>
 
-            <!-- Content Analysis -->
+            <!-- Speaking Metrics -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                 <div class="metric-card">
-                    <h3 class="font-semibold text-gray-700">Key Points Covered</h3>
-                    <p id="keyPoints" class="text-lg"></p>
+                    <h3 class="font-semibold text-gray-700">Speaking Rate</h3>
+                    <p id="speakingRate" class="text-lg"></p>
                     
-                    <h3 class="font-semibold text-gray-700 mt-4">Relevance to Position</h3>
-                    <p id="relevance" class="text-lg"></p>
+                    <h3 class="font-semibold text-gray-700 mt-4">Number of Pauses</h3>
+                    <p id="pauseCount" class="text-lg"></p>
+                    
+                    <h3 class="font-semibold text-gray-700 mt-4">Total Pause Duration</h3>
+                    <p id="pauseDuration" class="text-lg"></p>
                 </div>
 
                 <div class="metric-card">
-                    <h3 class="font-semibold text-gray-700">Strengths</h3>
-                    <p id="strengths" class="text-lg"></p>
+                    <h3 class="font-semibold text-gray-700">Overall Audio Score</h3>
+                    <p id="audioScore" class="text-2xl font-bold text-blue-600"></p>
                     
-                    <h3 class="font-semibold text-gray-700 mt-4">Areas for Improvement</h3>
-                    <p id="improvements" class="text-lg"></p>
+                    <h3 class="font-semibold text-gray-700 mt-4">Strengths & Areas for Improvement</h3>
+                    <p id="feedback" class="text-lg"></p>
                 </div>
             </div>
 
             <div class="mt-6 flex justify-end space-x-4">
-                <button onclick="window.location.href='/results'" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">BACK</button>
-                <button onclick="window.location.href='/dashboard'" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">FINISH</button>
+                <button class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">EXIT</button>
+                <button class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">NEXT</button>
+                
             </div>
         </div>
     </main>
 
     <script>
+        document.querySelector('.bg-blue-600').addEventListener('click', () => {
+            window.location.href = '/textResults';
+        });
         // Retrieve last recording from IndexedDB
         const dbName = 'VideoRecordingsDB';
         const storeName = 'recordings';
@@ -92,15 +109,17 @@ const { title = 'Video Analysis' } = Astro.props;
             };
         };
 
-        // Load and display content analysis metrics from sessionStorage
+        // Load and display metrics from sessionStorage
         window.addEventListener('DOMContentLoaded', () => {
-            const analysis = JSON.parse(sessionStorage.getItem('contentAnalysis') || '{}');
+            const metrics = JSON.parse(sessionStorage.getItem('audioMetrics') || '{}');
             
-            document.getElementById('contentScore').textContent = analysis.score || 'N/A';
-            document.getElementById('keyPoints').textContent = analysis.keyPoints || 'No key points available';
-            document.getElementById('relevance').textContent = analysis.relevance || 'No relevance data available';
-            document.getElementById('strengths').textContent = analysis.strengths || 'No strengths identified';
-            document.getElementById('improvements').textContent = analysis.improvements || 'No improvements suggested';
+            document.getElementById('pitchVariation').textContent = metrics.pitch_variation || 'N/A';
+            document.getElementById('avgVolume').textContent = metrics.average_volume || 'N/A';
+            document.getElementById('speakingRate').textContent = metrics.speaking_rate || 'N/A';
+            document.getElementById('pauseCount').textContent = metrics.pause_count || 'N/A';
+            document.getElementById('pauseDuration').textContent = metrics.pause_duration ? `${metrics.pause_duration}s` : 'N/A';
+            document.getElementById('audioScore').textContent = metrics.score || 'N/A';
+            document.getElementById('feedback').textContent = metrics.feedback || 'No feedback available';
         });
     </script>
 </body>

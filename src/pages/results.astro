@@ -78,14 +78,14 @@ const { title = 'Audio Analysis' } = Astro.props;
 
             <div class="mt-6 flex justify-end space-x-4">
                 <button class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">EXIT</button>
-                <button class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">NEXT</button>
+                <button id="nextButton" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">NEXT</button>
                 
             </div>
         </div>
     </main>
 
     <script>
-        document.querySelector('.bg-blue-600').addEventListener('click', () => {
+        document.getElementById('nextButton').addEventListener('click', () => {
             window.location.href = '/textresults';
         });
         // Retrieve last recording from IndexedDB

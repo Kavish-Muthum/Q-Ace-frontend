@@ -89,10 +89,16 @@ const { title = 'Text Analysis' } = Astro.props;
         window.addEventListener('DOMContentLoaded', () => {
             const textMetrics = JSON.parse(sessionStorage.getItem('textMetrics') || '{}');
             
-            document.getElementById('strengths').textContent = textMetrics.strengths || 'No strengths data available';
+            // document.getElementById('strengths').textContent = textMetrics.strengths || 'No strengths data available';
+            // document.getElementById('weaknesses').textContent = textMetrics.weaknesses || 'No weaknesses data available';
+            // document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
+            // document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
+
+            document.getElementById('strengths').textContent = textMetrics.strengths || "-Technical expertise matches job requirements (Ruby on Rails, Javascript)\n-Proven experience in key areas (code deployment, testing, process improvement, collaboration) ";
             document.getElementById('weaknesses').textContent = textMetrics.weaknesses || 'No weaknesses data available';
             document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
             document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
+
         });
 
         document.querySelector('button').addEventListener('click', () => {

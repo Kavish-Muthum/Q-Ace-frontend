@@ -85,9 +85,6 @@ const { title = 'Audio Analysis' } = Astro.props;
     </main>
 
     <script>
-        document.getElementById('nextButton').addEventListener('click', () => {
-            window.location.href = '/textresults';
-        });
         // Retrieve last recording from IndexedDB
         const dbName = 'VideoRecordingsDB';
         const storeName = 'recordings';
@@ -128,6 +125,14 @@ const { title = 'Audio Analysis' } = Astro.props;
             // document.getElementById('pauseDuration').textContent = metrics.pause_duration ? `${metrics.pause_duration}s` : 'N/A';
             // document.getElementById('audioScore').textContent = metrics.score || 'N/A';
             // document.getElementById('feedback').textContent = metrics.feedback || 'No feedback available';
+        });
+
+        document.querySelector('button:first-of-type').addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            window.location.href = '/videoanalysis';
         });
     </script>
 </body>

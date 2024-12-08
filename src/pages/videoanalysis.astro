@@ -101,6 +101,10 @@ const { title = 'Video Analysis' } = Astro.props;
         document.querySelector('button').addEventListener('click', () => {
             window.location.href = '/dashboard';
         });
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            window.location.href = '/text';
+        });
     </script>
 </body>
 </html>

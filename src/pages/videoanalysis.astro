@@ -1,0 +1,106 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import Header from '../components/Header.astro';
+
+const { title = 'Video Analysis' } = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} | SaaS Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .feedback-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <Sidebar />
+    
+    <main class="flex-grow bg-white ml-64 p-8">
+        <Header title={title} />
+        
+        <div class="mt-8">
+            <h1 class="text-2xl font-bold text-blue-900 mb-6">Video Analysis Feedback</h1>
+
+            <!-- Video Playback Section -->
+            <div class="mb-8">
+                <video id="recorded" controls class="w-full max-w-4xl mx-auto border border-gray-300 rounded-lg"></video>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Body Language</h2>
+                    <h3 class="font-medium mb-2">Posture</h3>
+                    <ul class="text-gray-700 mb-4">
+                        <li>Good overall posture</li>
+                        <li>Try to be more upright</li>
+                    </ul>
+                    <h3 class="font-medium mb-2">Emotions</h3>
+                    <ul class="text-gray-700 mb-4">
+                        <li>Smile a bit more</li>
+                        <li>Have a more relaxed expression on your face</li>
+                    </ul>
+                    <h3 class="font-medium mb-2">Nodding</h3>
+                    <ul class="text-gray-700">
+                        <li>Keep your head more centered</li>
+                        <li>Less shaking movement</li>
+                    </ul>
+                </div>
+
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Eye Contact</h2>
+                    <ul class="text-gray-700">
+                        <li>Less wandering of eyes</li>
+                        <li>Ensure focus is on screen</li>
+                    </ul>
+                </div>
+
+                <div class="feedback-card col-span-2">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Video Analysis Score</h2>
+                    <p class="text-4xl font-bold text-blue-600">75/100</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button class="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    NEXT
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Retrieve last recording from IndexedDB
+        const dbName = 'VideoRecordingsDB';
+        const storeName = 'recordings';
+        
+        const request = indexedDB.open(dbName, 1);
+        
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction([storeName], 'readonly');
+            const objectStore = transaction.objectStore(storeName);
+            const getLastRecording = objectStore.openCursor(null, 'prev');
+            
+            getLastRecording.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const recordedVideo = document.getElementById('recorded');
+                    recordedVideo.src = URL.createObjectURL(cursor.value.video);
+                }
+            };
+        };
+
+        document.querySelector('button').addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+    </script>
+</body>
+</html>

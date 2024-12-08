@@ -1,0 +1,126 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import Header from '../components/Header.astro';
+
+const { title = 'Content Analysis' } = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} | SaaS Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .metric-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .feedback-section {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <Sidebar />
+    
+    <main class="flex-grow bg-white ml-64 p-8">
+        <Header title={title} />
+        
+        <div class="mt-8">
+            <h1 class="text-2xl font-bold mb-6">Overall Feedback</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Video Playback Section -->
+                <div class="lg:col-span-2">
+                    <video id="recorded" controls class="w-full border border-gray-300 rounded-lg"></video>
+                </div>
+
+                <!-- Metrics Section -->
+                <div class="space-y-4">
+                    <div class="metric-card">
+                        <h3 class="font-semibold text-gray-700">Pitch Variation</h3>
+                        <p id="pitchVariation" class="text-lg"></p>
+                    </div>
+                    <div class="metric-card">
+                        <h3 class="font-semibold text-gray-700">Average Volume</h3>
+                        <p id="avgVolume" class="text-lg"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Speaking Metrics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div class="metric-card">
+                    <h3 class="font-semibold text-gray-700">Speaking Rate</h3>
+                    <p id="speakingRate" class="text-lg"></p>
+                    
+                    <h3 class="font-semibold text-gray-700 mt-4">Number of Pauses</h3>
+                    <p id="pauseCount" class="text-lg"></p>
+                    
+                    <h3 class="font-semibold text-gray-700 mt-4">Total Pause Duration</h3>
+                    <p id="pauseDuration" class="text-lg"></p>
+                </div>
+
+                <div class="metric-card">
+                    <h3 class="font-semibold text-gray-700">Overall Audio Score</h3>
+                    <p id="audioScore" class="text-2xl font-bold text-blue-600"></p>
+                    
+                    <h3 class="font-semibold text-gray-700 mt-4">Strengths & Areas for Improvement</h3>
+                    <p id="feedback" class="text-lg"></p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-4">
+                <button class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">EXIT</button>
+                <button id="nextButton" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">NEXT</button>
+                
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('nextButton').addEventListener('click', () => {
+            window.location.href = '/text';
+        });
+        // Retrieve last recording from IndexedDB
+        const dbName = 'VideoRecordingsDB';
+        const storeName = 'recordings';
+        
+        const request = indexedDB.open(dbName, 1);
+        
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction([storeName], 'readonly');
+            const objectStore = transaction.objectStore(storeName);
+            const getLastRecording = objectStore.openCursor(null, 'prev');
+            
+            getLastRecording.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const recordedVideo = document.getElementById('recorded');
+                    recordedVideo.src = URL.createObjectURL(cursor.value.video);
+                }
+            };
+        };
+
+        // Load and display metrics from sessionStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const metrics = JSON.parse(sessionStorage.getItem('audioMetrics') || '{}');
+            
+            document.getElementById('pitchVariation').textContent = metrics.pitch_variation || 'N/A';
+            document.getElementById('avgVolume').textContent = metrics.average_volume || 'N/A';
+            document.getElementById('speakingRate').textContent = metrics.speaking_rate || 'N/A';
+            document.getElementById('pauseCount').textContent = metrics.pause_count || 'N/A';
+            document.getElementById('pauseDuration').textContent = metrics.pause_duration ? `${metrics.pause_duration}s` : 'N/A';
+            document.getElementById('audioScore').textContent = metrics.score || 'N/A';
+            document.getElementById('feedback').textContent = metrics.feedback || 'No feedback available';
+        });
+    </script>
+</body>
+</html>

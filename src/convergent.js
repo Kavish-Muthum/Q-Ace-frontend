@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const librosa = require('librosa');
-const fs = require('fs');
+// import axios from 'axios';
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+// const librosa = require('librosa');
+// const fs = require('fs');
 
 // Placeholder for your Perplexity API key
 const PERPLEXITY_API_KEY = "insert here";

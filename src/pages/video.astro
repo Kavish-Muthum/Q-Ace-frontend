@@ -58,7 +58,7 @@ const { title = 'Recording' } = Astro.props;
         <div class="mt-8">
             <slot />
             
-            <!-- <div class="flex justify-between items-start space-x-8">
+            <div class="flex justify-between items-start space-x-8">
                 <div class="flex-grow space-y-4 flex flex-col items-center">
                     <div class="relative w-full">
                         <video id="preview" autoplay muted class="border border-gray-300 rounded-lg"></video>
@@ -71,36 +71,6 @@ const { title = 'Recording' } = Astro.props;
                     </div>
                     <video id="recorded" controls class="border border-gray-300 rounded-lg"></video>
                     <button id="playLastRecording" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play Last Recording</button>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="speech-bubble mb-4">
-                        <p class="text-lg">What is your greatest strength?</p>
-                    </div>
-                    <div class="speech-bubble mb-4">
-                        <p class="text-lg">How do you handle challenging situations?</p>
-                    </div>
-                    <div class="speech-bubble mb-4">
-                        <p class="text-lg">Why are you interested in this position?</p>
-                    </div>
-                    <div class="speech-bubble mb-4">
-                        <p class="text-lg">Tell me about a project you're proud of.</p>
-                    </div>
-                    <div class="speech-bubble">
-                        <p class="text-lg">Where do you see yourself in 5 years?</p>
-                    </div>
-                </div>
-            </div> -->
-            <div class="flex justify-between items-start space-x-8">
-                <div class="flex-grow space-y-4 flex flex-col items-center">
-                    <div class="relative w-full">
-                        <video id="preview" autoplay muted class="border border-gray-300 rounded-lg"></video>
-                        <div id="recordingIndicator" class="recording-indicator">Recording</div>
-                    </div>
-                    <div id="timerDisplay" class="text-lg font-bold">00:00</div>
-                    <div class="space-x-2">
-                        <button id="startRecord" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Start Recording</button>
-                        <button id="stopRecord" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" disabled>Stop Recording</button>
-                    </div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="speech-bubble mb-4">
@@ -142,17 +112,6 @@ const { title = 'Recording' } = Astro.props;
         stopRecordButton.addEventListener('click', stopRecording);
         playLastRecordingButton.addEventListener('click', playLastRecording);
 
-        initializeVideoPreview();
-
-        async function initializeVideoPreview() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                previewVideo.srcObject = stream;
-            } catch (error) {
-                console.error("Error accessing camera:", error);
-                alert("Failed to access camera. Please ensure you've granted the necessary permissions.");
-            }
-        }
         // IndexedDB setup
         let db;
         const dbName = 'VideoRecordingsDB';
@@ -176,7 +135,18 @@ const { title = 'Recording' } = Astro.props;
             console.log("Object store created");
         };
 
+        // Start video preview as soon as the page loads
+        initializeVideoPreview();
 
+        async function initializeVideoPreview() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                previewVideo.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing camera:", error);
+                alert("Failed to access camera. Please ensure you've granted the necessary permissions.");
+            }
+        }
 
         function showRecordingIndicator() {
             recordingIndicator.style.display = 'block';
@@ -239,17 +209,19 @@ const { title = 'Recording' } = Astro.props;
             mediaRecorder.stop();
             startRecordButton.disabled = false;
             stopRecordButton.disabled = true;
+            
             hideRecordingIndicator();
             stopTimer();
-
+            
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });
                 saveRecordingToIndexedDB(blob);
                 recordedChunks = [];
-                // Navigate to the video analysis page
+                
+                // Navigate to the results page after saving the recording
                 window.location.href = '/results';
             };
-        }
+        }   
 
         function saveRecordingToIndexedDB(blob) {
             const transaction = db.transaction([storeName], 'readwrite');

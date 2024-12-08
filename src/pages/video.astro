@@ -176,18 +176,7 @@ const { title = 'Recording' } = Astro.props;
             console.log("Object store created");
         };
 
-        // Start video preview as soon as the page loads
-        initializeVideoPreview();
 
-        async function initializeVideoPreview() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                previewVideo.srcObject = stream;
-            } catch (error) {
-                console.error("Error accessing camera:", error);
-                alert("Failed to access camera. Please ensure you've granted the necessary permissions.");
-            }
-        }
 
         function showRecordingIndicator() {
             recordingIndicator.style.display = 'block';

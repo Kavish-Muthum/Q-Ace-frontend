@@ -94,11 +94,35 @@ const { title = 'Interview Analysis' } = Astro.props;
             // document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
             // document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
 
-            document.getElementById('strengths').textContent = textMetrics.strengths || "-Technical expertise matches job requirements (Ruby on Rails, Javascript)\n-Proven experience in key areas (code deployment, testing, process improvement, collaboration) ";
-            document.getElementById('weaknesses').textContent = textMetrics.weaknesses || 'No weaknesses data available';
-            document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
-            document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
+        });
 
+        window.addEventListener('DOMContentLoaded', () => {
+            const textMetrics = {
+                strengths: [
+                    "• Technical expertise matches job requirements (Ruby on Rails, JavaScript, React)",
+                    "• Proven experience in key areas (code deployment, testing, process improvement, collaboration)",
+                    "• Personal qualities suit the role (problem-solving skills, adaptability, eagerness to learn)"
+                ].join('<br>'),
+                
+                weaknesses: [
+                    "• No specific project examples showcasing Ruby on Rails and React skills",
+                    "• No mention of relevant technologies like Docker and MySQL to align with job requirements",
+                    "• No mention of adaptability to Weinfuse's specific company culture"
+                ].join('<br>'),
+                
+                tips: [
+                    "• Highlight specific project examples using Ruby on Rails and React",
+                    "• Emphasize experience with additional technologies like Docker and MySQL",
+                    "• Address adaptation to Weinfuse's company culture and personal contributions"
+                ].join('<br>'),
+                
+                score: "85/100"
+            };
+            
+            document.getElementById("strengths").innerHTML = textMetrics.strengths;
+            document.getElementById('weaknesses').innerHTML = textMetrics.weaknesses;
+            document.getElementById('tips').innerHTML = textMetrics.tips;
+            document.getElementById('textScore').innerHTML = textMetrics.score;
         });
 
         document.querySelector('button').addEventListener('click', () => {

@@ -2,7 +2,7 @@
 import Sidebar from '../components/Sidebar.astro';
 import Header from '../components/Header.astro';
 
-const { title = 'Content Analysis' } = Astro.props;
+const { title = 'Text Analysis' } = Astro.props;
 ---
 
 <html lang="en">
@@ -12,17 +12,11 @@ const { title = 'Content Analysis' } = Astro.props;
     <title>{title} | SaaS Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .metric-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .feedback-section {
+        .feedback-card {
             background-color: white;
             border-radius: 0.5rem;
             padding: 1.5rem;
-            margin-top: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -33,61 +27,44 @@ const { title = 'Content Analysis' } = Astro.props;
         <Header title={title} />
         
         <div class="mt-8">
-            <h1 class="text-2xl font-bold mb-6">Overall Feedback</h1>
+            <h1 class="text-2xl font-bold text-blue-900 mb-6">Text Analysis Feedback</h1>
+
+            <!-- Video Playback Section -->
+            <div class="mb-8">
+                <video id="recorded" controls class="w-full max-w-4xl mx-auto border border-gray-300 rounded-lg"></video>
+            </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Video Playback Section -->
-                <div class="lg:col-span-2">
-                    <video id="recorded" controls class="w-full border border-gray-300 rounded-lg"></video>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Strengths</h2>
+                    <p id="strengths" class="text-lg text-gray-700"></p>
                 </div>
 
-                <!-- Metrics Section -->
-                <div class="space-y-4">
-                    <div class="metric-card">
-                        <h3 class="font-semibold text-gray-700">Pitch Variation</h3>
-                        <p id="pitchVariation" class="text-lg"></p>
-                    </div>
-                    <div class="metric-card">
-                        <h3 class="font-semibold text-gray-700">Average Volume</h3>
-                        <p id="avgVolume" class="text-lg"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Speaking Metrics -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div class="metric-card">
-                    <h3 class="font-semibold text-gray-700">Speaking Rate</h3>
-                    <p id="speakingRate" class="text-lg"></p>
-                    
-                    <h3 class="font-semibold text-gray-700 mt-4">Number of Pauses</h3>
-                    <p id="pauseCount" class="text-lg"></p>
-                    
-                    <h3 class="font-semibold text-gray-700 mt-4">Total Pause Duration</h3>
-                    <p id="pauseDuration" class="text-lg"></p>
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Weaknesses</h2>
+                    <p id="weaknesses" class="text-lg text-gray-700"></p>
                 </div>
 
-                <div class="metric-card">
-                    <h3 class="font-semibold text-gray-700">Overall Audio Score</h3>
-                    <p id="audioScore" class="text-2xl font-bold text-blue-600"></p>
-                    
-                    <h3 class="font-semibold text-gray-700 mt-4">Strengths & Areas for Improvement</h3>
-                    <p id="feedback" class="text-lg"></p>
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Tips to improve</h2>
+                    <p id="tips" class="text-lg text-gray-700"></p>
+                </div>
+
+                <div class="feedback-card">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-4">Text Analysis Score</h2>
+                    <p id="textScore" class="text-4xl font-bold text-blue-600"></p>
                 </div>
             </div>
 
-            <div class="mt-6 flex justify-end space-x-4">
-                <button class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">EXIT</button>
-                <button id="nextButton" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">NEXT</button>
-                
+            <div class="mt-6 flex justify-end">
+                <button class="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    EXIT
+                </button>
             </div>
         </div>
     </main>
 
     <script>
-        document.getElementById('nextButton').addEventListener('click', () => {
-            window.location.href = '/text';
-        });
         // Retrieve last recording from IndexedDB
         const dbName = 'VideoRecordingsDB';
         const storeName = 'recordings';
@@ -109,17 +86,17 @@ const { title = 'Content Analysis' } = Astro.props;
             };
         };
 
-        // Load and display metrics from sessionStorage
         window.addEventListener('DOMContentLoaded', () => {
-            const metrics = JSON.parse(sessionStorage.getItem('audioMetrics') || '{}');
+            const textMetrics = JSON.parse(sessionStorage.getItem('textMetrics') || '{}');
             
-            document.getElementById('pitchVariation').textContent = metrics.pitch_variation || 'N/A';
-            document.getElementById('avgVolume').textContent = metrics.average_volume || 'N/A';
-            document.getElementById('speakingRate').textContent = metrics.speaking_rate || 'N/A';
-            document.getElementById('pauseCount').textContent = metrics.pause_count || 'N/A';
-            document.getElementById('pauseDuration').textContent = metrics.pause_duration ? `${metrics.pause_duration}s` : 'N/A';
-            document.getElementById('audioScore').textContent = metrics.score || 'N/A';
-            document.getElementById('feedback').textContent = metrics.feedback || 'No feedback available';
+            document.getElementById('strengths').textContent = textMetrics.strengths || 'No strengths data available';
+            document.getElementById('weaknesses').textContent = textMetrics.weaknesses || 'No weaknesses data available';
+            document.getElementById('tips').textContent = textMetrics.tips || 'No tips available';
+            document.getElementById('textScore').textContent = textMetrics.score || 'N/A';
+        });
+
+        document.querySelector('button').addEventListener('click', () => {
+            window.location.href = '/dashboard';
         });
     </script>
 </body>

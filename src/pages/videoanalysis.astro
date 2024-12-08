@@ -69,7 +69,7 @@ const { title = 'Video Analysis' } = Astro.props;
             </div>
 
             <div class="mt-6 flex justify-end">
-                <button class="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                <button id="nextButton" class="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                     NEXT
                 </button>
             </div>
@@ -97,11 +97,7 @@ const { title = 'Video Analysis' } = Astro.props;
                 }
             };
         };
-
-        document.querySelector('button').addEventListener('click', () => {
-            window.location.href = '/dashboard';
-        });
-
+    
         document.getElementById('nextButton').addEventListener('click', () => {
             window.location.href = '/textresults';
         });

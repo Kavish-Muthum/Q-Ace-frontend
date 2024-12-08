@@ -142,6 +142,17 @@ const { title = 'Recording' } = Astro.props;
         stopRecordButton.addEventListener('click', stopRecording);
         playLastRecordingButton.addEventListener('click', playLastRecording);
 
+        initializeVideoPreview();
+
+        async function initializeVideoPreview() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                previewVideo.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing camera:", error);
+                alert("Failed to access camera. Please ensure you've granted the necessary permissions.");
+            }
+        }
         // IndexedDB setup
         let db;
         const dbName = 'VideoRecordingsDB';
@@ -239,19 +250,17 @@ const { title = 'Recording' } = Astro.props;
             mediaRecorder.stop();
             startRecordButton.disabled = false;
             stopRecordButton.disabled = true;
-            
             hideRecordingIndicator();
             stopTimer();
-            
+
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/webm' });
                 saveRecordingToIndexedDB(blob);
                 recordedChunks = [];
-                
-                // Navigate to the results page after saving the recording
+                // Navigate to the video analysis page
                 window.location.href = '/results';
             };
-        }   
+        }
 
         function saveRecordingToIndexedDB(blob) {
             const transaction = db.transaction([storeName], 'readwrite');

@@ -110,14 +110,6 @@ const { title = 'Interview Analysis' } = Astro.props;
         window.addEventListener('DOMContentLoaded', () => {
             const metrics = JSON.parse(sessionStorage.getItem('audioMetrics') || '{}');
             
-            document.getElementById('pitchVariation').textContent = metrics.pitch_variation || '0.0325 (low)';
-            document.getElementById('avgVolume').textContent = metrics.average_volume || '0.2416 (high)';
-            document.getElementById('speakingRate').textContent = metrics.speaking_rate || '4.59 syllables/sec (fast)';
-            document.getElementById('pauseCount').textContent = metrics.pause_count || '7 (good)';
-            document.getElementById('pauseDuration').textContent = metrics.pause_duration ? `${metrics.pause_duration}s` : '6.73 seconds';
-            document.getElementById('audioScore').textContent = metrics.score || '70/100';
-            document.getElementById('feedback').textContent = metrics.feedback || 'Good use of pauses, however try to increase vocal variety, moderate your volume slightly, and slow down a little. Your doing great!';
-
             // document.getElementById('pitchVariation').textContent = metrics.pitch_variation || 'N/A';
             // document.getElementById('avgVolume').textContent = metrics.average_volume || 'N/A';
             // document.getElementById('speakingRate').textContent = metrics.speaking_rate || 'N/A';
